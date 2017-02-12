@@ -39,7 +39,7 @@ function love.update(dt)
   dtotal = dtotal + dt
   --change sequence every refresh time
   if dtotal > refresh_rate then
-    if love.keyboard.isDown("a") then
+    if love.keyboard.isDown("right") then
       character.pose_index = (character.pose_index + 1) % character.pose_number 
       character.current_pose = character.sequence[character.pose_index]
       dtotal = 0
