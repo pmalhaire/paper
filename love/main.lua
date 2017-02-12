@@ -1,8 +1,8 @@
 local character
 
 function love.load()
-  
-  
+  --debug
+  if arg[#arg] == "-debug" then require("mobdebug").start() end
   
   --load character
   character = {}
