@@ -40,20 +40,30 @@ function love.update(dt)
   --change sequence every refresh time
   if dtotal > refresh_rate then
     if love.keyboard.isDown("right") then
-      flip = 1
-      character.pose_index = (character.pose_index + 1) % character.pose_number
-      character.current_pose = character.sequence[character.pose_index]
-      dtotal = 0
-      --move along the axis
-      character.posx = character.posx + flip * character.pose_width/character.pose_number
+      if flip == 1 then
+        character.pose_index = (character.pose_index + 1) % character.pose_number
+        character.current_pose = character.sequence[character.pose_index]
+        dtotal = 0
+        --move along the axis
+        character.posx = character.posx + flip * character.pose_width/character.pose_number
+      else
+        --in case of flip don't change position
+        flip = 1
+        character.posx = character.posx - character.pose_width
+      end
     end 
     if love.keyboard.isDown("left") then
-      flip = -1
-      character.pose_index = (character.pose_index + 1) % character.pose_number 
-      character.current_pose = character.sequence[character.pose_index]
-      dtotal = 0
-      --move along the axis
-      character.posx = character.posx + flip * character.pose_width/character.pose_number
+      if flip == -1 then
+        character.pose_index = (character.pose_index + 1) % character.pose_number
+        character.current_pose = character.sequence[character.pose_index]
+        dtotal = 0
+        --move along the axis
+        character.posx = character.posx + flip * character.pose_width/character.pose_number
+      else
+        --in case of flip don't change position
+        flip = -1
+        character.posx = character.posx + character.pose_width
+      end
     end
     if  character.posx > width + character.pose_width then
       flip = -1
