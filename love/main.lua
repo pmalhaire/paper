@@ -65,10 +65,11 @@ function love.update(dt)
         character.posx = character.posx + character.pose_width
       end
     end
+    --if we go out of the scren continue
     if  character.posx > width + character.pose_width then
-      flip = -1
+      character.posx = -character.pose_width
     elseif character.posx < -character.pose_width then
-      flip = 1
+      character.posx = width + character.pose_width
     end
   end
 end
