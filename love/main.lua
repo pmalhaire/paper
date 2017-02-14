@@ -84,25 +84,21 @@ function love.load()
   character.posy = config.height/2
 end
 
-function love.touchpressed(id, x, y, pressure)
-    --touch functions for mobile
-    -- Converting the touchscreen proximity coordinates
-    -- to actual pixel coordinates
-    local cx = x * love.graphics.getWidth()
-    local cy = y * love.graphics.getHeight()
+function love.touchmoved(id, x, y, dx, dy)
+
     local dir = nil
     -- Checking if touch is within an object/area
-    if cy < ( character.posy - character.pose_height/2) then
+    if dy > 10 then
         dir = "up"
-    elseif cy > ( character.posy + character.pose_height/2) then
+    elseif dy < 10 then
         dir = "down"
-    elseif cx < ( character.posx - character.pose_width/2) then
+    elseif dx < 0 then
         dir = "left"
-    elseif cx > ( character.posx + character.pose_width/2) then
+    elseif dx > 0 then
         dir = "right"
     end
-  if dtotal > config.refresh_rate and dir then
-      move(character, dir)
+  if dir then
+      love.event.push('keypressed',dir)
   end
 end
 
@@ -123,6 +119,7 @@ function love.update(dt)
     
     if dir then
       move(character, dir)
+      dtotal = 0
     end
     --if we go out of the scren continue
     if  character.posx > config.width + character.pose_width - character.flipx * character.pose_width/2 then
@@ -136,7 +133,6 @@ function love.update(dt)
     elseif character.posy < character.pose_height/2 then
       character.posy = character.pose_height/2
     end
-    dtotal = 0
   end
 end
 
