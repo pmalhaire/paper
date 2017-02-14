@@ -85,6 +85,7 @@ function love.load()
 end
 
 function love.touchpressed(id, x, y, pressure)
+    --touch functions for mobile
     -- Converting the touchscreen proximity coordinates
     -- to actual pixel coordinates
     local cx = x * love.graphics.getWidth()
@@ -100,6 +101,9 @@ function love.touchpressed(id, x, y, pressure)
     elseif cx > ( character.posx + character.pose_width/2) then
         dir = "right"
     end
+  if dtotal > config.refresh_rate and dir then
+      move(character, dir)
+  end
 end
 
 function love.update(dt)
