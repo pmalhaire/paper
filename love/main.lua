@@ -87,15 +87,19 @@ end
 local dir
 
 function love.touchmoved(id, x, y, dx, dy)
-    if dy > 10 then
+    if dy > 0 then
         dir = "up"
-    elseif dy < 10 then
+    elseif dy < 0 then
         dir = "down"
     elseif dx < 0 then
         dir = "left"
     elseif dx > 0 then
         dir = "right"
     end
+end
+
+function love.touchreleased()
+    dir = nil
 end
 
 function love.keypressed( key )
