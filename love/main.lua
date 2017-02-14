@@ -1,80 +1,141 @@
+local lg = love.graphics
 local character
+local config = {refresh_rate=.07}
+--keep delta time
+local dtotal = 0
 
-function love.load()
-  --debug
-  if arg[#arg] == "-debug" then require("mobdebug").start() end
-  
+function newCharacter(image_path,pose_count)
   --load character
   character = {}
-  character.image_name = "res/sample.png"
-  character.image = love.graphics.newImage(character.image_name)
-  character.pose_number = 8
+  character.image = love.graphics.newImage(image_path)
+  character.pose_count = pose_count
   
   character.total_width = character.image:getWidth()
   character.total_height = character.image:getHeight()
   
   character.pose_height = character.image:getHeight()
-  character.pose_width = character.image:getWidth() / character.pose_number
+  character.pose_width = character.image:getWidth() / character.pose_count
   
   character.sequence = {}
   
   character.pose_index = 0
   
-  refresh_rate = .07
-  
-  for i=0, character.pose_number-1 do
-    character.sequence[i] = love.graphics.newQuad(i*character.pose_width, 0, character.pose_width, character.pose_height, character.total_width, character.total_height)
+  for i=0, character.pose_count-1 do
+    character.sequence[i] = lg.newQuad(i*character.pose_width, 0, character.pose_width, character.pose_height, character.total_width, character.total_height)
   end
   character.current_pose = character.sequence[character.pose_index]
-  
-  --get the size of the window to move the character
-  width, height = love.graphics.getDimensions( )
-  character.posx = -character.pose_width
+  return character
 end
 
---keep delta time
-dtotal = 0
-flip = 1
+local function move(character,direction)
+  if direction == "up" then
+    character.posy = character.posy - character.pose_height/40
+    if character.flipx == 1 then
+      direction = "right"
+    else
+      direction = "left"
+    end
+  elseif direction == "down" then
+    character.posy = character.posy + character.pose_height/40
+    if character.flipx == 1 then
+      direction = "right"
+    else
+      direction = "left"
+    end
+  end
+  
+  if direction == "right" then
+    if character.flipx == 1 then
+      character.pose_index = (character.pose_index + 1) % character.pose_count
+      character.current_pose = character.sequence[character.pose_index]
+      --move along the axis
+      character.posx = character.posx + character.flipx * character.pose_width/character.pose_count
+    else
+      --in case of flip don't change position
+      character.flipx = 1
+      character.posx = character.posx - character.pose_width
+    end
+  elseif direction == "left" then
+    if character.flipx == -1 then
+      character.pose_index = (character.pose_index + 1) % character.pose_count
+      character.current_pose = character.sequence[character.pose_index]
+      --move along the axis
+      character.posx = character.posx + character.flipx * character.pose_width/character.pose_count
+    else
+      --in case of flip don't change position
+      character.flipx = -1
+      character.posx = character.posx + character.pose_width
+    end
+  end
+end
+
+local function draw(character)
+	lg.draw(character.image, character.current_pose, character.posx, character.posy, 0,character.flipx,1,character.flipx*character.pose_width/2,character.pose_height/2)
+end
+
+function love.load()
+  --debug
+  if arg[#arg] == "-debug" then require("mobdebug").start() end
+  character = newCharacter("res/sample.png",8)
+  --get the size of the window to move the character
+  config.width, config.height = lg.getDimensions( )
+  character.flipx = 1
+  character.posx = config.width/2
+  character.posy = config.height/2
+end
+
+function love.touchpressed(id, x, y, pressure)
+    -- Converting the touchscreen proximity coordinates
+    -- to actual pixel coordinates
+    local cx = x * love.graphics.getWidth()
+    local cy = y * love.graphics.getHeight()
+    local dir = nil
+    -- Checking if touch is within an object/area
+    if cy < ( character.posy - character.pose_height/2) then
+        dir = "up"
+    elseif cy > ( character.posy + character.pose_height/2) then
+        dir = "down"
+    elseif cx < ( character.posx - character.pose_width/2) then
+        dir = "left"
+    elseif cx > ( character.posx + character.pose_width/2) then
+        dir = "right"
+    end
+end
+
 function love.update(dt)
   dtotal = dtotal + dt
   --change sequence every refresh time
-  if dtotal > refresh_rate then
+  if dtotal > config.refresh_rate then
+    local dir = nil
     if love.keyboard.isDown("right") then
-      if flip == 1 then
-        character.pose_index = (character.pose_index + 1) % character.pose_number
-        character.current_pose = character.sequence[character.pose_index]
-        dtotal = 0
-        --move along the axis
-        character.posx = character.posx + flip * character.pose_width/character.pose_number
-      else
-        --in case of flip don't change position
-        flip = 1
-        character.posx = character.posx - character.pose_width
-      end
-    end 
-    if love.keyboard.isDown("left") then
-      if flip == -1 then
-        character.pose_index = (character.pose_index + 1) % character.pose_number
-        character.current_pose = character.sequence[character.pose_index]
-        dtotal = 0
-        --move along the axis
-        character.posx = character.posx + flip * character.pose_width/character.pose_number
-      else
-        --in case of flip don't change position
-        flip = -1
-        character.posx = character.posx + character.pose_width
-      end
+      dir = "right"
+    elseif love.keyboard.isDown("left") then
+      dir = "left"
+    elseif love.keyboard.isDown("up") then
+      dir = "up"
+    elseif love.keyboard.isDown("down") then
+      dir="down"
+    end
+    
+    if dir then
+      move(character, dir)
     end
     --if we go out of the scren continue
-    if  character.posx > width + character.pose_width then
-      character.posx = -character.pose_width
-    elseif character.posx < -character.pose_width then
-      character.posx = width + character.pose_width
+    if  character.posx > config.width + character.pose_width - character.flipx * character.pose_width/2 then
+      character.posx = 0
+    elseif character.posx < -character.pose_width/2 then
+      character.posx = config.width + character.pose_width
     end
+    --if we go out of the scren continue
+    if  character.posy > config.height - character.pose_height/2 then
+      character.posy = config.height - character.pose_height/2
+    elseif character.posy < character.pose_height/2 then
+      character.posy = character.pose_height/2
+    end
+    dtotal = 0
   end
 end
 
 function love.draw()
-  --draw the image in the center
-	love.graphics.draw(character.image, character.current_pose, character.posx, height/2-character.pose_height/2, 0,flip,1)
+  draw(character)
 end
