@@ -84,10 +84,9 @@ function love.load()
   character.posy = config.height/2
 end
 
-function love.touchmoved(id, x, y, dx, dy)
+local dir
 
-    local dir = nil
-    -- Checking if touch is within an object/area
+function love.touchmoved(id, x, y, dx, dy)
     if dy > 10 then
         dir = "up"
     elseif dy < 10 then
@@ -97,26 +96,30 @@ function love.touchmoved(id, x, y, dx, dy)
     elseif dx > 0 then
         dir = "right"
     end
-  if dir then
-      love.event.push('keypressed',dir)
-  end
+end
+
+function love.keypressed( key )
+    if key == "right" then
+      dir = "right"
+    elseif key == "left" then
+      dir = "left"
+    elseif key == "up" then
+      dir = "up"
+    elseif key == "down" then
+      dir="down"
+    end
+end
+ 
+function love.keyreleased( key )
+    if key == "right" or key == "left" or key == "up" or key == "down" then
+      dir=nil
+    end
 end
 
 function love.update(dt)
   dtotal = dtotal + dt
   --change sequence every refresh time
   if dtotal > config.refresh_rate then
-    local dir = nil
-    if love.keyboard.isDown("right") then
-      dir = "right"
-    elseif love.keyboard.isDown("left") then
-      dir = "left"
-    elseif love.keyboard.isDown("up") then
-      dir = "up"
-    elseif love.keyboard.isDown("down") then
-      dir="down"
-    end
-    
     if dir then
       move(character, dir)
       dtotal = 0
