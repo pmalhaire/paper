@@ -85,17 +85,52 @@ function love.load()
 end
 
 local dir
+--local help = ""
 
-function love.touchmoved(id, x, y, dx, dy)
-    if dy > 0 then
+function love.touchpressed(id, x, y, dx, dy)
+    local cx = x
+    local cy = y
+    cx = character.posx - cx
+    cy = character.posy - cy
+    --todo fix hard coded values
+    if cy > 100 then
         dir = "up"
-    elseif dy < 0 then
+    elseif cy < -100 then
         dir = "down"
-    elseif dx < 0 then
+    elseif cx > 10 then
         dir = "left"
-    elseif dx > 0 then
+    elseif cx < 10 then
         dir = "right"
     end
+    if cx > 10 and character.flipx > 0 then
+	dir = "left"
+    elseif cx < 10 and character.flipx < 0 then
+	dir = "right"
+    end
+    --help = {"x", cx, "\ny", cy}
+end
+
+function love.touchmoved(id, x, y, dx, dy)
+    local cx = x
+    local cy = y
+    cx = character.posx - cx
+    cy = character.posy - cy
+    --todo fix hard coded values
+    if cy > 100 then
+        dir = "up"
+    elseif cy < -100 then
+        dir = "down"
+    elseif cx > 10 then
+        dir = "left"
+    elseif cx < 10 then
+        dir = "right"
+    end
+    if cx > 10 and character.flipx > 0 then
+	dir = "left"
+    elseif cx < 10 and character.flipx < 0 then
+	dir = "right"
+    end
+    --help = {"x", cx, "\ny", cy}
 end
 
 function love.touchreleased()
@@ -145,4 +180,6 @@ end
 
 function love.draw()
   draw(character)
+
+  --lg.print(help,20,200,0,4,4)
 end
