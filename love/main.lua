@@ -1,73 +1,12 @@
 local lg = love.graphics
-local character
+local my_character
 local config = {refresh_rate=.07}
 --keep delta time
 local dtotal = 0
+local character = require ("character")
+local touch_id
 
-function newCharacter(image_path,pose_count)
-  --load character
-  character = {}
-  character.image = love.graphics.newImage(image_path)
-  character.pose_count = pose_count
-  
-  character.total_width = character.image:getWidth()
-  character.total_height = character.image:getHeight()
-  
-  character.pose_height = character.image:getHeight()
-  character.pose_width = character.image:getWidth() / character.pose_count
-  
-  character.sequence = {}
-  
-  character.pose_index = 0
-  
-  for i=0, character.pose_count-1 do
-    character.sequence[i] = lg.newQuad(i*character.pose_width, 0, character.pose_width, character.pose_height, character.total_width, character.total_height)
-  end
-  character.current_pose = character.sequence[character.pose_index]
-  return character
-end
 
-local function move(character,direction)
-  if direction == "up" then
-    character.posy = character.posy - character.pose_height/40
-    if character.flipx == 1 then
-      direction = "right"
-    else
-      direction = "left"
-    end
-  elseif direction == "down" then
-    character.posy = character.posy + character.pose_height/40
-    if character.flipx == 1 then
-      direction = "right"
-    else
-      direction = "left"
-    end
-  end
-  
-  if direction == "right" then
-    if character.flipx == 1 then
-      character.pose_index = (character.pose_index + 1) % character.pose_count
-      character.current_pose = character.sequence[character.pose_index]
-      --move along the axis
-      character.posx = character.posx + character.flipx * character.pose_width/character.pose_count
-    else
-      --in case of flip don't change position
-      character.flipx = 1
-      character.posx = character.posx - character.pose_width
-    end
-  elseif direction == "left" then
-    if character.flipx == -1 then
-      character.pose_index = (character.pose_index + 1) % character.pose_count
-      character.current_pose = character.sequence[character.pose_index]
-      --move along the axis
-      character.posx = character.posx + character.flipx * character.pose_width/character.pose_count
-    else
-      --in case of flip don't change position
-      character.flipx = -1
-      character.posx = character.posx + character.pose_width
-    end
-  end
-end
 
 local function draw(character)
 	lg.draw(character.image, character.current_pose, character.posx, character.posy, 0,character.flipx,1,character.flipx*character.pose_width/2,character.pose_height/2)
@@ -76,22 +15,22 @@ end
 function love.load()
   --debug
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-  character = newCharacter("res/sample.png",8)
+  my_character = character.newCharacter("res/sample.png",8)
   --get the size of the window to move the character
   config.width, config.height = lg.getDimensions( )
-  character.flipx = 1
-  character.posx = config.width/2
-  character.posy = config.height/2
+  my_character.flipx = 1
+  my_character.posx = config.width/2
+  my_character.posy = config.height/2
 end
 
 local dir
 --local help = ""
 
-function love.touchpressed(id, x, y, dx, dy)
+function love.touchpressed(id, x, y)
     local cx = x
     local cy = y
-    cx = character.posx - cx
-    cy = character.posy - cy
+    cx = my_character.posx - cx
+    cy = my_character.posy - cy
     --todo fix hard coded values
     if cy > 100 then
         dir = "up"
@@ -102,19 +41,22 @@ function love.touchpressed(id, x, y, dx, dy)
     elseif cx < 10 then
         dir = "right"
     end
-    if cx > 10 and character.flipx > 0 then
-	dir = "left"
-    elseif cx < 10 and character.flipx < 0 then
-	dir = "right"
+    if touch_id ~= id then
+      if cx > 10 and my_character.flipx > 0 then
+        dir = "left"
+      elseif cx < 10 and my_character.flipx < 0 then
+        dir = "right"
+      end
+      touch_id = id
     end
     --help = {"x", cx, "\ny", cy}
 end
 
-function love.touchmoved(id, x, y, dx, dy)
+function love.touchmoved(id, x, y)
     local cx = x
     local cy = y
-    cx = character.posx - cx
-    cy = character.posy - cy
+    cx = my_character.posx - cx
+    cy = my_character.posy - cy
     --todo fix hard coded values
     if cy > 100 then
         dir = "up"
@@ -125,12 +67,14 @@ function love.touchmoved(id, x, y, dx, dy)
     elseif cx < 10 then
         dir = "right"
     end
-    if cx > 10 and character.flipx > 0 then
-	dir = "left"
-    elseif cx < 10 and character.flipx < 0 then
-	dir = "right"
+    if touch_id ~= id then
+      if cx > 10 and my_character.flipx > 0 then
+        dir = "left"
+      elseif cx < 10 and my_character.flipx < 0 then
+        dir = "right"
+      end
+      touch_id = id
     end
-    --help = {"x", cx, "\ny", cy}
 end
 
 function love.touchreleased()
@@ -160,26 +104,24 @@ function love.update(dt)
   --change sequence every refresh time
   if dtotal > config.refresh_rate then
     if dir then
-      move(character, dir)
+      character.move(my_character, dir)
       dtotal = 0
     end
     --if we go out of the scren continue
-    if  character.posx > config.width + character.pose_width - character.flipx * character.pose_width/2 then
-      character.posx = 0
-    elseif character.posx < -character.pose_width/2 then
-      character.posx = config.width + character.pose_width
+    if  my_character.posx > config.width + my_character.pose_width - my_character.flipx * my_character.pose_width/2 then
+      my_character.posx = 0
+    elseif my_character.posx < -my_character.pose_width/2 then
+      my_character.posx = config.width + my_character.pose_width
     end
     --if we go out of the scren continue
-    if  character.posy > config.height - character.pose_height/2 then
-      character.posy = config.height - character.pose_height/2
-    elseif character.posy < character.pose_height/2 then
-      character.posy = character.pose_height/2
+    if  my_character.posy > config.height - my_character.pose_height/2 then
+      my_character.posy = config.height - my_character.pose_height/2
+    elseif my_character.posy < my_character.pose_height/2 then
+      my_character.posy = my_character.pose_height/2
     end
   end
 end
 
 function love.draw()
-  draw(character)
-
-  --lg.print(help,20,200,0,4,4)
+  draw(my_character)
 end
