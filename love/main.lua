@@ -31,6 +31,14 @@ function love.touchpressed(id, x, y)
     local cy = y
     cx = my_character.posx - cx
     cy = my_character.posy - cy
+    if touch_id ~= id then
+      if cx > 10 and my_character.flipx > 0 then
+        dir = "left"
+      elseif cx < 10 and my_character.flipx < 0 then
+        dir = "right"
+      end
+      touch_id = id
+    end
     --todo fix hard coded values
     if cy > 100 then
         dir = "up"
@@ -41,15 +49,6 @@ function love.touchpressed(id, x, y)
     elseif cx < 10 then
         dir = "right"
     end
-    if touch_id ~= id then
-      if cx > 10 and my_character.flipx > 0 then
-        dir = "left"
-      elseif cx < 10 and my_character.flipx < 0 then
-        dir = "right"
-      end
-      touch_id = id
-    end
-    --help = {"x", cx, "\ny", cy}
 end
 
 function love.touchmoved(id, x, y)
@@ -58,6 +57,14 @@ function love.touchmoved(id, x, y)
     cx = my_character.posx - cx
     cy = my_character.posy - cy
     --todo fix hard coded values
+    if touch_id ~= id then
+      if cx > 10 and my_character.flipx > 0 then
+        dir = "left"
+      elseif cx < 10 and my_character.flipx < 0 then
+        dir = "right"
+      end
+      touch_id = id
+    end
     if cy > 100 then
         dir = "up"
     elseif cy < -100 then
@@ -66,14 +73,6 @@ function love.touchmoved(id, x, y)
         dir = "left"
     elseif cx < 10 then
         dir = "right"
-    end
-    if touch_id ~= id then
-      if cx > 10 and my_character.flipx > 0 then
-        dir = "left"
-      elseif cx < 10 and my_character.flipx < 0 then
-        dir = "right"
-      end
-      touch_id = id
     end
 end
 
