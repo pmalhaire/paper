@@ -1,4 +1,5 @@
 local lg = love.graphics
+local step_size = 30
 
 local function new(image_path,pose_count)
   --load character
@@ -25,14 +26,14 @@ end
 
 local function _move(character,direction)
   if direction == "up" then
-    character.posy = character.posy - character.pose_height/40
+    character.posy = character.posy - character.pose_height/step_size
     if character.flipx == 1 then
       direction = "right"
     else
       direction = "left"
     end
   elseif direction == "down" then
-    character.posy = character.posy + character.pose_height/40
+    character.posy = character.posy + character.pose_height/step_size
     if character.flipx == 1 then
       direction = "right"
     else

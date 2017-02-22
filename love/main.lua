@@ -73,6 +73,32 @@ function love.touchreleased()
     dir = nil
 end
 
+function love.mousepressed(id, x, y)
+    local cx = my_character.posx - x
+    local cy = my_character.posy - y
+    if cx > 10 and my_character.flipx > 0 then
+        dir = "left"
+    elseif cx < 10 and my_character.flipx < 0 then
+        dir = "right"
+    else
+      --todo fix hard coded values
+      if cy > 100 then
+          dir = "up"
+      elseif cy < -100 then
+          dir = "down"
+      elseif cx > 10 then
+          dir = "left"
+      elseif cx < 10 then
+          dir = "right"
+      end
+    end
+end
+
+
+function love.mousereleased()
+    dir = nil
+end
+
 function love.keypressed( key )
     if key == "right" then
       dir = "right"
