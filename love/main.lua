@@ -15,7 +15,7 @@ end
 function love.load()
   --debug
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-  my_character = character.newCharacter("res/sample.png",8)
+  my_character = character.newCharacter("res/sample.jpg")
   --get the size of the window to move the character
   config.width, config.height = lg.getDimensions( )
   my_character.flipx = 1

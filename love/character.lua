@@ -1,7 +1,34 @@
 local lg = love.graphics
 local step_size = 30
+-- color level to detect empty space
+local empty_theshold = 254
 
-local function new(image_path,pose_count)
+local function countPoses(image, seuil)
+  local image_data = image:getData()
+  local h = image_data:getHeight()
+  local w = image_data:getWidth()
+  local pose_count = 0
+  local newPose = false
+  for i=0,w-1 do
+    local sum = 0
+    for j=0,h-1 do
+      r, g, b = image_data:getPixel(i,j)
+      sum = sum + r + g + b
+    end
+    if sum > (h*3*seuil) then
+      if newPose == false then
+        pose_count = pose_count + 1
+        newPose = true
+      end
+    else
+      newPose = false
+    end
+  end
+  return pose_count-1
+end
+
+
+local function new(image_path)
   --load character
   local character = {}
   character.image = love.graphics.newImage(image_path)
@@ -16,6 +43,7 @@ local function new(image_path,pose_count)
   character.sequence = {}
   
   character.pose_index = 0
+  character.pose_count = countPoses(character.image, empty_theshold)
   
   for i=0, character.pose_count-1 do
     character.sequence[i] = lg.newQuad(i*character.pose_width, 0, character.pose_width, character.pose_height, character.total_width, character.total_height)
