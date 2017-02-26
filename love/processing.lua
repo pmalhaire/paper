@@ -1,11 +1,15 @@
+math.randomseed( os.time() )
+local init_r = 50 + math.random(100)
+local init_g = 30 + math.random(100)
+local init_b = 20 + math.random(100)
 --initialize the gradient
 local init_gradient=100
 
 function pixel_gradient( x, y, r, g, b, a )
    if r>0 and g>0 and b>0 then
-     r=(y+init_gradient)%255
-     g=y%255
-     b=y%255
+     r=init_r+y%(255-init_r)
+     g=init_g+y%(255-init_g)
+     b=init_b+y%(255-init_r)
    end
    return r,g,b,a
 end
