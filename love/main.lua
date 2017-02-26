@@ -18,7 +18,6 @@ function love.load()
   my_character = character.newCharacter("res/sample.png",8)
   --get the size of the window to move the character
   config.width, config.height = lg.getDimensions( )
-  my_character.flipx = 1
   my_character.posx = config.width/2
   my_character.posy = config.height/2
 end
@@ -30,19 +29,19 @@ function love.touchpressed(id, x, y)
     local cx = my_character.posx - x
     local cy = my_character.posy - y
     if cx > 10 and my_character.flipx > 0 then
-        dir = "left"
+        character.left(my_character)
     elseif cx < 10 and my_character.flipx < 0 then
-        dir = "right"
+        character.right(my_character)
     else
       --todo fix hard coded values
       if cy > 100 then
-          dir = "up"
+          character.up(my_character)
       elseif cy < -100 then
-          dir = "down"
+          character.down(my_character)
       elseif cx > 10 then
-          dir = "left"
+          character.left(my_character)
       elseif cx < 10 then
-          dir = "right"
+          character.right(my_character)
       end
     end
 end
@@ -52,79 +51,75 @@ function love.touchmoved(id, x, y)
     local cy = my_character.posy - y
 
     if cx > 10 and my_character.flipx > 0 then
-        dir = "left"
+        character.left(my_character)
     elseif cx < 10 and my_character.flipx < 0 then
-        dir = "right"
+        character.right(my_character)
     else
       --todo fix hard coded values
       if cy > 100 then
-          dir = "up"
+          character.up(my_character)
       elseif cy < -100 then
-          dir = "down"
+          character.down(my_character)
       elseif cx > 10 then
-          dir = "left"
+          character.left(my_character)
       elseif cx < 10 then
-          dir = "right"
+          character.right(my_character)
       end
     end
 end
 
 function love.touchreleased()
-    dir = nil
+    character.no_move(my_character)
 end
 
 function love.mousepressed(id, x, y)
     local cx = my_character.posx - x
     local cy = my_character.posy - y
     if cx > 10 and my_character.flipx > 0 then
-        dir = "left"
+        character.left(my_character)
     elseif cx < 10 and my_character.flipx < 0 then
-        dir = "right"
+        character.right(my_character)
     else
       --todo fix hard coded values
       if cy > 100 then
-          dir = "up"
+          character.up(my_character)
       elseif cy < -100 then
-          dir = "down"
+          character.down(my_character)
       elseif cx > 10 then
-          dir = "left"
+          character.left(my_character)
       elseif cx < 10 then
-          dir = "right"
+          character.right(my_character)
       end
     end
 end
 
 
 function love.mousereleased()
-    dir = nil
+    character.no_move(my_character)
 end
 
 function love.keypressed( key )
     if key == "right" then
-      dir = "right"
+      character.right(my_character)
     elseif key == "left" then
-      dir = "left"
+      character.left(my_character)
     elseif key == "up" then
-      dir = "up"
+      character.up(my_character)
     elseif key == "down" then
-      dir="down"
+      character.down(my_character)
     end
 end
- 
+
 function love.keyreleased( key )
-    if key == "right" or key == "left" or key == "up" or key == "down" then
-      dir=nil
-    end
+  character.no_move(my_character)
 end
 
 function love.update(dt)
   dtotal = dtotal + dt
   --change sequence every refresh time
   if dtotal > config.refresh_rate then
-    if dir then
-      character.move(my_character, dir)
-      dtotal = 0
-    end
+    character.move(my_character)
+    dtotal = 0
     --if we go out of the scren continue
     if  my_character.posx > config.width + my_character.pose_width - my_character.flipx * my_character.pose_width/2 then
       my_character.posx = 0
