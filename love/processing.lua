@@ -1,15 +1,16 @@
 math.randomseed( os.time() )
-local init_r = 50 + math.random(100)
+--local init_r = 50 + math.random(100)
 local init_g = 30 + math.random(100)
 local init_b = 20 + math.random(100)
 --initialize the gradient
 local init_gradient=100
+local y_ratio
 
 function pixel_gradient( x, y, r, g, b, a )
    if r>0 and g>0 and b>0 then
-     r=init_r+y%(255-init_r)
-     g=init_g+y%(255-init_g)
-     b=init_b+y%(255-init_r)
+     r=(y*y_ratio)%255
+     g=init_g
+     b=init_b
    end
    return r,g,b,a
 end
@@ -71,6 +72,7 @@ function compute_image( image )
   local min, max = get_range(image)
   local threshold = (min[1] + min[2] + min[3] + max[1] + max[2] + max[3])/6
   eroded_image = erosion(image, threshold)
+  y_ratio = 255/image:getHeight()
   gradient(eroded_image)
   return love.graphics.newImage(eroded_image)
 end
