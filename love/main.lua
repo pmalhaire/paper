@@ -15,98 +15,63 @@ end
 function love.load()
   --debug
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-  my_character = character.newCharacter("res/sample.png",8)
+
   --get the size of the window to move the character
   config.width, config.height = lg.getDimensions( )
-  my_character.posx = config.width/2
-  my_character.posy = config.height/2
+  my_character = character.newCharacter("res/sample.png",8,config.width,config.height)
 end
 
 local dir
 --local help = ""
 
 function love.touchpressed(id, x, y)
-    local cx = my_character.posx - x
-    local cy = my_character.posy - y
-    if cx > 10 and my_character.flipx > 0 then
-        character.left(my_character)
-    elseif cx < 10 and my_character.flipx < 0 then
-        character.right(my_character)
-    else
-      --todo fix hard coded values
-      if cy > 100 then
-          character.up(my_character)
-      elseif cy < -100 then
-          character.down(my_character)
-      elseif cx > 10 then
-          character.left(my_character)
-      elseif cx < 10 then
-          character.right(my_character)
-      end
-    end
+  character.move_to_position(my_character,x,y)
 end
 
 function love.touchmoved(id, x, y)
-    local cx = my_character.posx - x
-    local cy = my_character.posy - y
-
-    if cx > 10 and my_character.flipx > 0 then
-        character.left(my_character)
-    elseif cx < 10 and my_character.flipx < 0 then
-        character.right(my_character)
-    else
-      --todo fix hard coded values
-      if cy > 100 then
-          character.up(my_character)
-      elseif cy < -100 then
-          character.down(my_character)
-      elseif cx > 10 then
-          character.left(my_character)
-      elseif cx < 10 then
-          character.right(my_character)
-      end
-    end
+  character.move_to_position(my_character,x,y)
 end
 
 function love.touchreleased()
     character.no_move(my_character)
 end
 
-function love.mousepressed(id, x, y)
-    local cx = my_character.posx - x
-    local cy = my_character.posy - y
-    if cx > 10 and my_character.flipx > 0 then
-        character.left(my_character)
-    elseif cx < 10 and my_character.flipx < 0 then
-        character.right(my_character)
-    else
-      --todo fix hard coded values
-      if cy > 100 then
-          character.up(my_character)
-      elseif cy < -100 then
-          character.down(my_character)
-      elseif cx > 10 then
-          character.left(my_character)
-      elseif cx < 10 then
-          character.right(my_character)
-      end
-    end
+function love.mousepressed(x, y, button)
+  if button == 1 then
+    character.move_to_position(my_character,x,y)
+  end
 end
 
+function love.mousemoved(x, y, button)
+  if love.mouse.isDown(1) then
+    character.move_to_position(my_character,x,y)
+  end
+end
 
 function love.mousereleased()
     character.no_move(my_character)
 end
 
+local xdir = "left"
 function love.keypressed( key )
     if key == "right" then
       character.right(my_character)
+      xdir = key
     elseif key == "left" then
       character.left(my_character)
+      xdir = key
     elseif key == "up" then
-      character.up(my_character)
+      if xdir == "right" then
+        character.up_right(my_character)
+      else
+        character.up_left(my_character)
+      end
     elseif key == "down" then
-      character.down(my_character)
+      if xdir == "right" then
+        character.down_right(my_character)
+      else
+        character.down_left(my_character)
+      end
     end
 end
 
@@ -120,18 +85,6 @@ function love.update(dt)
   if dtotal > config.refresh_rate then
     character.move(my_character)
     dtotal = 0
-    --if we go out of the scren continue
-    if  my_character.posx > config.width + my_character.pose_width - my_character.flipx * my_character.pose_width/2 then
-      my_character.posx = 0
-    elseif my_character.posx < -my_character.pose_width/2 then
-      my_character.posx = config.width + my_character.pose_width
-    end
-    --if we go out of the scren continue
-    if  my_character.posy > config.height - my_character.pose_height/2 then
-      my_character.posy = config.height - my_character.pose_height/2
-    elseif my_character.posy < my_character.pose_height/2 then
-      my_character.posy = my_character.pose_height/2
-    end
   end
 end
 
