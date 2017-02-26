@@ -53,7 +53,9 @@ function love.mousereleased()
 end
 
 local xdir = "left"
+local lastkey = nil
 function love.keypressed( key )
+    lastkey = key
     if key == "right" then
       character.right(my_character)
       xdir = key
@@ -76,7 +78,9 @@ function love.keypressed( key )
 end
 
 function love.keyreleased( key )
-  character.no_move(my_character)
+  if key == lastkey then
+    character.no_move(my_character)
+  end
 end
 
 function love.update(dt)
