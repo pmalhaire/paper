@@ -1,7 +1,7 @@
 math.randomseed( os.time() )
 
-local init_g = 30 + math.random(100)
-local init_b = 20 + math.random(100)
+local init_g = .5 * math.random()
+local init_b = .5 * math.random()
 
 local y_ratio
 
@@ -36,7 +36,7 @@ end
 
 function pixel_gradient( _, y, r, g, b, a )
    if r>0 and g>0 and b>0 then
-     r=(y*y_ratio)%255
+     r=y*y_ratio
      g=init_g
      b=init_b
    end
@@ -106,7 +106,7 @@ function compute_image( image )
     --set_contrast_brightness(image,contrast_factor, bright_factor)
   end
   local eroded_image = erosion(image, threshold)
-  y_ratio = 255/image:getHeight()
+  y_ratio = 1/image:getHeight()
   gradient(eroded_image)
   return love.graphics.newImage(eroded_image)
 end
