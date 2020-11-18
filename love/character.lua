@@ -1,3 +1,4 @@
+local processing = require ("processing")
 local lg = love.graphics
 local step_size = 30
 local NO_MOVE, RIGHT, LEFT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT = 'n', 'r', 'l', 'u', 'd', 'ur', 'ul', 'dl', 'dr'
@@ -5,7 +6,9 @@ local NO_MOVE, RIGHT, LEFT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT =
 local function new(image_path, pose_count, area_width, area_height)
   --load character
   local character = {}
-  character.image = love.graphics.newImage(image_path)
+  local img = love.image.newImageData(image_path)
+  local image = compute_image(img)
+  character.image = image
   character.pose_count = pose_count
 
   character.total_width = character.image:getWidth()

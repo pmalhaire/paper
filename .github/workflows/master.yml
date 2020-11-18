@@ -1,0 +1,34 @@
+
+name: PaperLove
+on:
+  push:
+    branches: [ master ]
+jobs:
+  # Build the paper application
+  build-hello_world:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: nhartland/love-build@master
+      id: love-build
+      with:
+        app_name: 'paper'
+        love_version: '11.3'
+        source_dir: 'love'
+    # Upload the resulting artifacts
+    - uses: actions/upload-artifact@v1
+      with:
+        name: hw_macos-build
+        path: ${{ steps.love-build.outputs.macos-filename }}
+    - uses: actions/upload-artifact@v1
+      with:
+        name: hw_win32-build
+        path: ${{ steps.love-build.outputs.win32-filename }}
+    - uses: actions/upload-artifact@v1
+      with:
+        name: hw_win64-build
+        path: ${{ steps.love-build.outputs.win64-filename }}
+    - uses: actions/upload-artifact@v1
+      with:
+        name: hw_love-build
+        path: ${{ steps.love-build.outputs.love-filename }}
