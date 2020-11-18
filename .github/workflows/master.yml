@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 jobs:
   # Build the paper application
-  build-hello_world:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
