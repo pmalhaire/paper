@@ -18,17 +18,17 @@ jobs:
     # Upload the resulting artifacts
     - uses: actions/upload-artifact@v1
       with:
-        name: hw_macos-build
+        name: paper_macos
         path: ${{ steps.love-build.outputs.macos-filename }}
     - uses: actions/upload-artifact@v1
       with:
-        name: hw_win32-build
+        name: paper_win32
         path: ${{ steps.love-build.outputs.win32-filename }}
     - uses: actions/upload-artifact@v1
       with:
-        name: hw_win64-build
+        name: paper_win64
         path: ${{ steps.love-build.outputs.win64-filename }}
     - uses: actions/upload-artifact@v1
       with:
-        name: hw_love-build
+        name: paper_love
         path: ${{ steps.love-build.outputs.love-filename }}
