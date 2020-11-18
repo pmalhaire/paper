@@ -6,7 +6,8 @@ local NO_MOVE, RIGHT, LEFT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT =
 local function new(image_path, pose_count, area_width, area_height)
   --load character
   local character = {}
-  local image = compute_image(love.image.newImageData(image_path))
+  local img = love.image.newImageData(image_path)
+  local image = compute_image(img)
   character.image = image
   character.pose_count = pose_count
 

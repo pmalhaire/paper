@@ -102,7 +102,8 @@ function compute_image( image )
   local contrast_factor = math.min(min[1], min[2], min[3])
   local threshold = (min[1] + min[2] + min[3] + max[1] + max[2] + max[3])/6
   if contrast_factor ~= 0 then
-    set_contrast_brightness(image,contrast_factor, bright_factor)
+    --todo fix this
+    --set_contrast_brightness(image,contrast_factor, bright_factor)
   end
   local eroded_image = erosion(image, threshold)
   y_ratio = 255/image:getHeight()
