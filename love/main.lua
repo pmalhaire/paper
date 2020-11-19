@@ -19,6 +19,7 @@ function love.load()
   --get the size of the window to move the character
   config.width, config.height = lg.getDimensions( )
   my_character = character.newCharacter("res/sample.png",8,config.width,config.height)
+  -- my_character = character.newCharacter("res/vulture.jpeg",7,config.width,config.height)
 end
 
 local dir
